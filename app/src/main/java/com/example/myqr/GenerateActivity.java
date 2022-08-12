@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Objects;
 
 public class GenerateActivity extends AppCompatActivity {
     TextInputEditText text;
@@ -36,10 +37,13 @@ public class GenerateActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generate);
-        getSupportActionBar().setDisplayShowCustomEnabled(true);
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.home_action_bar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        Objects.requireNonNull(this.getSupportActionBar()).hide();
+//        getSupportActionBar().setDisplayShowCustomEnabled(true);
+//        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+//        getSupportActionBar().setCustomView(R.layout.home_action_bar);
+//        getSupportActionBar().setDisplayShowTitleEnabled(false);
+//        getSupportActionBar().setBackgroundDrawable(getDrawable(R.color.white));
+
         text = findViewById(R.id.link);
         bt_generate = findViewById(R.id.bt_generateQR);
         im_qr=findViewById(R.id.qr_code);
@@ -70,26 +74,29 @@ public class GenerateActivity extends AppCompatActivity {
         download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                FileOutputStream outStream = null;
                 BitmapDrawable drawable = (BitmapDrawable) im_qr.getDrawable();
                 Bitmap map = drawable.getBitmap();
 
                 File filepath = Environment.getExternalStorageDirectory();
                 File dir  = new File(filepath.getAbsoluteFile()+"/QRCodes/");
-                dir.mkdir();
+                dir.mkdirs();
                 File file =new File(dir,System.currentTimeMillis()+".jpg");
+
                 try{
-                    output = new FileOutputStream(file);
+                    outStream = new FileOutputStream(file);
                 }catch (FileNotFoundException e){
+                    Toast.makeText(GenerateActivity.this, "problem1", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
                 map.compress(Bitmap.CompressFormat.JPEG,100,output);
                 try {
-                    output.flush();
+                    outStream.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 try {
-                    output.close();
+                    outStream.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
